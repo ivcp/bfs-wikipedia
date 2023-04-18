@@ -3,9 +3,6 @@ from collections import deque
 import time
 from requests.exceptions import HTTPError
 
-
-
-
 url = 'https://en.wikipedia.org/w/api.php'
 params = {
         'action': 'parse',        
@@ -26,7 +23,7 @@ def get_page(params):
 
 
 def bfs_wikipedia(start_page, target_page):
-    print(f"finding path from {start_page} to {target_page}")
+    print(f'finding path from {start_page} to {target_page}')
     visited = set()
     queue = deque([(start_page, [start_page])])
     
@@ -34,7 +31,7 @@ def bfs_wikipedia(start_page, target_page):
 
     while queue and not found:
         page, path = queue.popleft()
-        #print(f"checking - {page}")
+        #print(f'checking - {page}')
         
         
         if page not in visited:
@@ -46,7 +43,8 @@ def bfs_wikipedia(start_page, target_page):
             else:
                 try:
                     params['page'] = page                
-                    links = get_page(params)                                                
+                    links = get_page(params)  
+                                                                  
                     for link in links['parse']['links']:
                         if not link['ns']:
                             if link['*'] not in visited:
@@ -58,21 +56,27 @@ def bfs_wikipedia(start_page, target_page):
                 except HTTPError as e:                
                     print(e.response.text)
                
-                except Exception as e:
+                except Exception:
                     pass
-
           
-    return found
+    return found, visited
 
 
 
-def main():
-    start_page = get_page(rand_params)['query']['random'][0]['title']
-
+def main(start_page):
+    
     start = time.time()
-    print(' --> '.join(bfs_wikipedia(start_page, 'Rome')))
-    end = time.time()    
-    print(f"Time (s): {round(end - start, 2)}")
+    params['page'] = start_page
+    error = 'error' in get_page(params)      
+    
+    found, visited = bfs_wikipedia(start_page, 'Rome')
+    end = time.time()        
+    path = ' --> '.join(found)
+    total_checked = len(visited) 
+    time_passed = round(end - start, 2)
+    
 
-main()
+    return path, total_checked, time_passed, error
+
+
 
