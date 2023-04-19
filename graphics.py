@@ -1,4 +1,4 @@
-from tkinter import Tk, Button, Label, Entry, Canvas
+from tkinter import Tk, Button, Label, Entry, Canvas, END
 from search import Search
 
 class Window:
@@ -12,40 +12,48 @@ class Window:
         #self.__root.configure(bg='red')
         self.canvas = Canvas(bg='skyblue', height=600, width=400)
         self.canvas.place(x=200, y=0)
-        self.__button = Button(self.__root, text='Start', command=self.__click)
-        self.__button.place(x=10, y=100)
+        self.__start_button = Button(self.__root, text='Start', command=self.__click)
+        self.__start_button.place(x=10, y=100)
         self.__input = Entry(self.__root)
-        self.__input.place(x=10, y=50)
-
-        self.canvas.create_line(1, 0, 1, 600, width=3)     
- 
+        self.__input.place(x=10, y=50)   
+        self.__rand_button = Button(self.__root, text='Random', command=self.__get_random_page)     
+        self.__rand_button.place(x=10, y=150)
         self.running = False
+
+        self.__search = Search()
 
     def __click(self):
         self.canvas.delete('all')
-        start = self.__input.get()
-        search = Search(start)
-        if search.error:
+        start_page = self.__input.get()
+        if start_page == '':
+            return
+        found, total_checked, time_passed, error = self.__search.find_path(start_page)
+        if error:
             #TODO: Clear lables
-            Label(self.__root, text=f'Page for {search.start_page} does not exist. Try another one.', bg='red').pack()
+            Label(self.__root, text=f'Page for {start_page} does not exist. Try another one.', bg='red').pack()
         else:
-            if not search.found:
-                Label(self.__root, text=f'Path not found from {search.start_page} to Rome', bg='red').pack()
+            if not found:
+                Label(self.__root, text=f'Path not found from {start_page} to Rome', bg='red').pack()
             y0 = 50
             y1 = 70
-            for i in range(len(search.found)):
+            for i in range(len(found)):
                 if i:
                     y0 += 80
                     y1 += 80
                 arrow = True
-                if i == len(search.found) - 1:
+                if i == len(found) - 1:
                     arrow = False 
-                p = Wiki_Page(200, y0, 220, y1, search.found[i])
+                p = Wiki_Page(200, y0, 220, y1, found[i])
                 p.draw(self.canvas, arrow)
-            info = Info(search.total_checked, search.time_passed)
+            info = Info(total_checked, time_passed)
             info.draw(self.canvas)
 
             
+    def __get_random_page(self):
+        random_page = self.__search.get_page(random=True)['query']['random'][0]['title']
+        self.__input.delete(0, 'end')      
+        self.__input.insert(0, random_page)      
+           
     def redraw(self):
         self.__root.update_idletasks()
         self.__root.update()
