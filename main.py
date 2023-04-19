@@ -23,7 +23,7 @@ def get_page(params):
 
 
 def bfs_wikipedia(start_page, target_page):
-    print(f'finding path from {start_page} to {target_page}')
+    #print(f'finding path from {start_page} to {target_page}')
     visited = set()
     queue = deque([(start_page, [start_page])])
     
@@ -31,8 +31,7 @@ def bfs_wikipedia(start_page, target_page):
 
     while queue and not found:
         page, path = queue.popleft()
-        #print(f'checking - {page}')
-        
+                
         
         if page not in visited:
             visited.add(page)
@@ -70,13 +69,13 @@ def main(start_page):
     error = 'error' in get_page(params)      
     
     found, visited = bfs_wikipedia(start_page, 'Rome')
-    end = time.time()        
-    path = ' --> '.join(found)
+    end = time.time()       
+    
     total_checked = len(visited) 
-    time_passed = round(end - start, 2)
+    time_passed = round(end - start)
     
 
-    return path, total_checked, time_passed, error
+    return found, total_checked, time_passed, error
 
 
 
