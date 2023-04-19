@@ -1,5 +1,5 @@
 from tkinter import Tk, Button, Label, Entry, Canvas
-from main import main
+from search import Search
 
 class Window:
     def __init__(self):
@@ -24,24 +24,25 @@ class Window:
     def __click(self):
         self.canvas.delete('all')
         start = self.__input.get()
-        found, total_checked, time_passed, error = main(start)
-        if error:
-            Label(self.__root, text=f'Page for {start} does not exist. Try another one.', bg='red').pack()
+        search = Search(start)
+        if search.error:
+            #TODO: Clear lables
+            Label(self.__root, text=f'Page for {search.start_page} does not exist. Try another one.', bg='red').pack()
         else:
-            if not found:
-                Label(self.__root, text=f'Path not found from {start} to Rome', bg='red').pack()
+            if not search.found:
+                Label(self.__root, text=f'Path not found from {search.start_page} to Rome', bg='red').pack()
             y0 = 50
             y1 = 70
-            for i in range(len(found)):
+            for i in range(len(search.found)):
                 if i:
                     y0 += 80
                     y1 += 80
                 arrow = True
-                if i == len(found) - 1:
+                if i == len(search.found) - 1:
                     arrow = False 
-                p = Wiki_Page(200, y0, 220, y1, found[i])
+                p = Wiki_Page(200, y0, 220, y1, search.found[i])
                 p.draw(self.canvas, arrow)
-            info = Info(total_checked, time_passed)
+            info = Info(search.total_checked, search.time_passed)
             info.draw(self.canvas)
 
             
@@ -86,6 +87,3 @@ class Info:
         canvas.create_text(5, 15, text=f'Pages checked: {self.total_checked}', anchor='nw')
         canvas.create_text(5, 45, text=f'Time: {t}{u}', anchor='nw')
         
-
-win = Window()
-win.wait_for_close()
