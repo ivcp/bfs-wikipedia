@@ -18,17 +18,11 @@ class Search:
         'rnnamespace': 0
     }  
 
-    def find_path(self, start_page):       
-        self.PARAMS['page'] = start_page
-        error = 'error' in self.get_page(random=False)  
-        #start_time = time.time()
-        #found = self.__bfs_wikipedia(start_page, 'Rome')
-        #end_time = time.time()  
-        #total_checked = len(visited) 
-        #time_passed = round(end_time - start_time)
-        #return found, time_passed, error 
-        
-                    
+    def page_error(self, page):       
+        self.PARAMS['page'] = page
+        return 'error' in self.get_page(random=False)
+
+          
     def get_page(self, random):
         params = self.PARAMS
         if random:
@@ -40,10 +34,10 @@ class Search:
         visited = set()
         queue = deque([(start_page, [start_page])])        
         found = False
-        #try generator
+        
         while queue and not found:
             page, path = queue.popleft()  
-            yield path
+            yield path, visited
             if page not in visited:
                 visited.add(page)
                 if page == target_page:
@@ -64,4 +58,4 @@ class Search:
                     except Exception:
                         pass         
                        
-        #return found, visited   
+         
