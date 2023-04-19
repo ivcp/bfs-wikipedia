@@ -1,5 +1,6 @@
 from tkinter import Tk, Button, Label, Entry, Canvas, END
 from search import Search
+import time
 
 class Window:
     def __init__(self):
@@ -23,20 +24,30 @@ class Window:
         self.__search = Search()
 
     def __click(self):
-        #self.canvas.delete('all')
+        
         start_page = self.__input.get()
         if start_page == '':
-            return
+            return        
+       
+        if self.__search.page_error(start_page):
+            #TODO: Clear lables
+            Label(self.__root, text=f'Page for {start_page} does not exist. Try another one.', bg='red').pack()
         
-    
-        
+        start_time = time.time()
         for i in self.__search.bfs_wikipedia(start_page, 'Rome'):
             self.canvas.delete('all')
-            self.draw_tree(i)
+            self.draw_nodes(i[0])
+            total = Info()
+            total.draw_checked(self.canvas, len(i[1]))
             self.__root.update()
+        end_time = time.time()
+        info = Info()
+        info.draw_time(self.canvas, round(end_time - start_time))
+        
+        # if not found:
+        #     Label(self.__root, text=f'Path not found from {start_page} to Rome', bg='red').pack()
 
-
-    def draw_tree(self, i):
+    def draw_nodes(self, i):
         y0 = 50
         y1 = 70
         for j in range(len(i)):
@@ -48,27 +59,7 @@ class Window:
                 arrow = False 
             p = Wiki_Page(200, y0, 220, y1, i[j])
             p.draw(self.canvas, arrow)
-        #found, time_passed, error = self.__search.find_path(start_page)
-        #if error:
-            #TODO: Clear lables
-        #    Label(self.__root, text=f'Page for {start_page} does not exist. Try another one.', bg='red').pack()
-        #else:
-            # if not found:
-            #     Label(self.__root, text=f'Path not found from {start_page} to Rome', bg='red').pack()
-            # y0 = 50
-            # y1 = 70
-            # for i in range(len(found)):
-            #     if i:
-            #         y0 += 80
-            #         y1 += 80
-            #     arrow = True
-            #     if i == len(found) - 1:
-            #         arrow = False 
-            #     p = Wiki_Page(200, y0, 220, y1, found[i])
-            #     p.draw(self.canvas, arrow)
-            # info = Info(total_checked, time_passed)
-            # info.draw(self.canvas)
-
+      
             
     def __get_random_page(self):
         random_page = self.__search.get_page(random=True)['query']['random'][0]['title']
@@ -103,16 +94,15 @@ class Wiki_Page:
         if arrow:
             canvas.create_line(mid_x, self.y1 + 25, mid_x, self.y1 + 45, arrow='last')
 
-class Info:
-    def __init__(self, total_checked, time):
-        self.total_checked = total_checked
-        self.time = time
+class Info:    
+    def draw_checked(self, canvas, total_checked):
+        canvas.create_text(5, 15, text=f'Pages checked: {total_checked}', anchor='nw')
 
-    def draw(self, canvas):
-        t = self.time
-        u = 's' if self.time < 60 else 'm'
-        if self.time > 60:
-            t = round(self.time / 60)
-        canvas.create_text(5, 15, text=f'Pages checked: {self.total_checked}', anchor='nw')
+    def draw_time(self, canvas, time):
+        t = None
+        u = 's' if time < 60 else 'm'
+        if time > 60:
+            t = round(time / 60)
+        else: t = round(time)      
         canvas.create_text(5, 45, text=f'Time: {t}{u}', anchor='nw')
         
