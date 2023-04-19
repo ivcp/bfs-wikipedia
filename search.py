@@ -21,12 +21,12 @@ class Search:
     def find_path(self, start_page):       
         self.PARAMS['page'] = start_page
         error = 'error' in self.get_page(random=False)  
-        start_time = time.time()
-        found, visited = self.__bfs_wikipedia(start_page, 'Rome')
-        end_time = time.time()  
-        total_checked = len(visited) 
-        time_passed = round(end_time - start_time)
-        return found, total_checked, time_passed, error 
+        #start_time = time.time()
+        #found = self.__bfs_wikipedia(start_page, 'Rome')
+        #end_time = time.time()  
+        #total_checked = len(visited) 
+        #time_passed = round(end_time - start_time)
+        #return found, time_passed, error 
         
                     
     def get_page(self, random):
@@ -36,17 +36,18 @@ class Search:
         response = requests.get(self.URL, params)
         return response.json()     
 
-    def __bfs_wikipedia(self, start_page, target_page):
+    def bfs_wikipedia(self, start_page, target_page):
         visited = set()
         queue = deque([(start_page, [start_page])])        
-        found = []
-
+        found = False
+        #try generator
         while queue and not found:
             page, path = queue.popleft()  
+            yield path
             if page not in visited:
                 visited.add(page)
                 if page == target_page:
-                    found.extend(path)
+                    found = True
                 else:
                     try:
                         self.PARAMS['page'] = page                
@@ -63,4 +64,4 @@ class Search:
                     except Exception:
                         pass         
                        
-        return found, visited   
+        #return found, visited   

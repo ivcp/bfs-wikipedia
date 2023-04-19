@@ -4,13 +4,13 @@ from search import Search
 class Window:
     def __init__(self):
         self.width = 600
-        self.height = 600
+        self.height = 1000
         self.__root = Tk() 
         self.__root.title('All Clicks Lead To Rome')
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
         self.__root.geometry(f'{self.width}x{self.height}')
         #self.__root.configure(bg='red')
-        self.canvas = Canvas(bg='skyblue', height=600, width=400)
+        self.canvas = Canvas(bg='skyblue', height=1000, width=400)
         self.canvas.place(x=200, y=0)
         self.__start_button = Button(self.__root, text='Start', command=self.__click)
         self.__start_button.place(x=10, y=100)
@@ -23,30 +23,51 @@ class Window:
         self.__search = Search()
 
     def __click(self):
-        self.canvas.delete('all')
+        #self.canvas.delete('all')
         start_page = self.__input.get()
         if start_page == '':
             return
-        found, total_checked, time_passed, error = self.__search.find_path(start_page)
-        if error:
+        
+    
+        
+        for i in self.__search.bfs_wikipedia(start_page, 'Rome'):
+            self.canvas.delete('all')
+            self.draw_tree(i)
+            self.__root.update()
+
+
+    def draw_tree(self, i):
+        y0 = 50
+        y1 = 70
+        for j in range(len(i)):
+            if j:
+                y0 += 80
+                y1 += 80
+            arrow = True
+            if j == len(i) - 1:
+                arrow = False 
+            p = Wiki_Page(200, y0, 220, y1, i[j])
+            p.draw(self.canvas, arrow)
+        #found, time_passed, error = self.__search.find_path(start_page)
+        #if error:
             #TODO: Clear lables
-            Label(self.__root, text=f'Page for {start_page} does not exist. Try another one.', bg='red').pack()
-        else:
-            if not found:
-                Label(self.__root, text=f'Path not found from {start_page} to Rome', bg='red').pack()
-            y0 = 50
-            y1 = 70
-            for i in range(len(found)):
-                if i:
-                    y0 += 80
-                    y1 += 80
-                arrow = True
-                if i == len(found) - 1:
-                    arrow = False 
-                p = Wiki_Page(200, y0, 220, y1, found[i])
-                p.draw(self.canvas, arrow)
-            info = Info(total_checked, time_passed)
-            info.draw(self.canvas)
+        #    Label(self.__root, text=f'Page for {start_page} does not exist. Try another one.', bg='red').pack()
+        #else:
+            # if not found:
+            #     Label(self.__root, text=f'Path not found from {start_page} to Rome', bg='red').pack()
+            # y0 = 50
+            # y1 = 70
+            # for i in range(len(found)):
+            #     if i:
+            #         y0 += 80
+            #         y1 += 80
+            #     arrow = True
+            #     if i == len(found) - 1:
+            #         arrow = False 
+            #     p = Wiki_Page(200, y0, 220, y1, found[i])
+            #     p.draw(self.canvas, arrow)
+            # info = Info(total_checked, time_passed)
+            # info.draw(self.canvas)
 
             
     def __get_random_page(self):
