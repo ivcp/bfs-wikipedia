@@ -16,22 +16,24 @@ class Search:
         'format': 'json',
         'list': 'random',    
         'rnnamespace': 0
-    }
+    }  
 
-    def __init__(self, start_page):
-        self.start_page = start_page
+    def find_path(self, start_page):       
         self.PARAMS['page'] = start_page
-        self.error = 'error' in self.__get_page(self.PARAMS)  
-        self.__start_time = time.time()
-        self.found, self.visited = self.__bfs_wikipedia(start_page, 'Rome')
-        self.__end_time = time.time()  
-        self.total_checked = len(self.visited) 
-        self.time_passed = round( self.__end_time - self.__start_time)
+        error = 'error' in self.get_page(random=False)  
+        start_time = time.time()
+        found, visited = self.__bfs_wikipedia(start_page, 'Rome')
+        end_time = time.time()  
+        total_checked = len(visited) 
+        time_passed = round(end_time - start_time)
+        return found, total_checked, time_passed, error 
         
-                
-
-    def __get_page(self, params):
-        response = requests.get(self.URL, params=params)
+                    
+    def get_page(self, random):
+        params = self.PARAMS
+        if random:
+            params = self.RAND_PARAMS
+        response = requests.get(self.URL, params)
         return response.json()     
 
     def __bfs_wikipedia(self, start_page, target_page):
@@ -48,7 +50,7 @@ class Search:
                 else:
                     try:
                         self.PARAMS['page'] = page                
-                        links = self.__get_page(self.PARAMS)                                                                     
+                        links = self.get_page(random=False)                                                                     
                         for link in links['parse']['links']:
                             if not link['ns']:
                                 if link['*'] not in visited:
