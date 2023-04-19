@@ -17,30 +17,34 @@ class Window:
         self.__input = Entry(self.__root)
         self.__input.place(x=10, y=50)
 
-
         self.canvas.create_line(1, 0, 1, 600, width=3)     
-        
-
+ 
         self.running = False
 
     def __click(self):
+        self.canvas.delete('all')
         start = self.__input.get()
-        path, total_checked, time_passed, error = main(start)
+        found, total_checked, time_passed, error = main(start)
         if error:
-            Label(self.__root, text='Page does not exist.').pack()
+            Label(self.__root, text=f'Page for {start} does not exist. Try another one.', bg='red').pack()
         else:
-            Label(self.__root, text=path).pack()
-            Label(self.__root, text=total_checked).pack()
-            Label(self.__root, text=time_passed).pack()
+            if not found:
+                Label(self.__root, text=f'Path not found from {start} to Rome', bg='red').pack()
+            y0 = 50
+            y1 = 70
+            for i in range(len(found)):
+                if i:
+                    y0 += 80
+                    y1 += 80
+                arrow = True
+                if i == len(found) - 1:
+                    arrow = False 
+                p = Wiki_Page(200, y0, 220, y1, found[i])
+                p.draw(self.canvas, arrow)
+            info = Info(total_checked, time_passed)
+            info.draw(self.canvas)
+
             
-
-    def draw_page(self, circle):
-        x = (circle.x1 + circle.x0) / 2
-        y = circle.y1 + 10
-        circle.draw(self.canvas)        
-        self.canvas.create_text(x, y, text=circle.title)
-        self.canvas.create_line(x, y + 10, x, y + 40, arrow='last')
-
     def redraw(self):
         self.__root.update_idletasks()
         self.__root.update()
@@ -54,7 +58,7 @@ class Window:
         self.running = False
 
 
-class Circle:
+class Wiki_Page:
     def __init__(self, x0, y0, x1, y1, title):
         self.x0 = x0
         self.y0 = y0
@@ -62,13 +66,26 @@ class Circle:
         self.y1 = y1
         self.title = title
 
-    def draw(self, canvas):
+    def draw(self, canvas, arrow):
         canvas.create_oval(self.x0, self.y0, self.x1, self.y1, width=1, fill='orange')
+        mid_x = (self.x1 + self.x0) / 2
+        canvas.create_text(mid_x, self.y1 + 10, text=self.title)
+        if arrow:
+            canvas.create_line(mid_x, self.y1 + 25, mid_x, self.y1 + 45, arrow='last')
 
+class Info:
+    def __init__(self, total_checked, time):
+        self.total_checked = total_checked
+        self.time = time
+
+    def draw(self, canvas):
+        t = self.time
+        u = 's' if self.time < 60 else 'm'
+        if self.time > 60:
+            t = round(self.time / 60)
+        canvas.create_text(5, 15, text=f'Pages checked: {self.total_checked}', anchor='nw')
+        canvas.create_text(5, 45, text=f'Time: {t}{u}', anchor='nw')
+        
 
 win = Window()
-c = Circle(200, 10, 220, 30, 'First page')
-c2 = Circle(200, 90, 220, 110, 'Second page')
-win.draw_page(c)
-win.draw_page(c2)
 win.wait_for_close()
