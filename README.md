@@ -1,0 +1,1 @@
+All clicks lead to Rome. Given a starting Wikipedia page, what's the least amount of clicks to reach the page for Rome? This solution uses breadth-first search algorithm to find the shortest path. Visualized with Tkinter.

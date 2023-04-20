@@ -6,13 +6,13 @@ import time
 class Window:
     def __init__(self):
         self.width = 600
-        self.height = 1000
+        self.height = 800
         self.__root = ThemedTk(theme='equilux') 
         self.__root.configure(bg='#414141')      
         self.__root.title('All Clicks Lead To Rome')
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
         self.__root.geometry(f'{self.width}x{self.height}')        
-        self.canvas = Canvas(bg='#414141', height=1000, width=400, highlightbackground='#636363')
+        self.canvas = Canvas(bg='#414141', height=800, width=400, highlightbackground='#636363')
         self.canvas.place(x=200, y=0)
         self.start_button = ttk.Button(self.__root, text='Start', command=self.click)
         self.start_button.place(x=10, y=100)
