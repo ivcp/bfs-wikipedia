@@ -1,4 +1,5 @@
-from tkinter import Tk, Button, Label, Entry, Canvas, END
+from tkinter import Canvas, ttk
+from ttkthemes import ThemedTk
 from search import Search
 import time
 
@@ -6,23 +7,25 @@ class Window:
     def __init__(self):
         self.width = 600
         self.height = 1000
-        self.__root = Tk() 
+        self.__root = ThemedTk(theme='equilux') 
+        self.__root.configure(bg='#414141')      
         self.__root.title('All Clicks Lead To Rome')
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
-        self.__root.geometry(f'{self.width}x{self.height}')
-        #self.__root.configure(bg='red')
-        self.canvas = Canvas(bg='skyblue', height=1000, width=400)
+        self.__root.geometry(f'{self.width}x{self.height}')        
+        self.canvas = Canvas(bg='#414141', height=1000, width=400, highlightbackground='#636363')
         self.canvas.place(x=200, y=0)
-        self.start_button = Button(self.__root, text='Start', command=self.click)
+        self.start_button = ttk.Button(self.__root, text='Start', command=self.click)
         self.start_button.place(x=10, y=100)
-        self.stop_button = Button(self.__root, text='Stop', command=self.stop_search)
+        self.stop_button = ttk.Button(self.__root, text='Stop', command=self.stop_search)
         self.stop_button.place(x=10, y=200)
-        self.input = Entry(self.__root)
+        ttk.Label(text='Starting page:', background='#414141').place(x=10, y=30)        
+        self.input = ttk.Entry(self.__root)
         self.input.place(x=10, y=50)   
-        self.rand_button = Button(self.__root, text='Random Page', command=self.get_random_page)     
+        self.rand_button = ttk.Button(self.__root, text='Random Page', command=self.get_random_page)     
         self.rand_button.place(x=10, y=150)
         self.search = Search()        
-        self.error_message = Label(self.__root, bg='red')
+        self.error_message = ttk.Label(self.__root)
+        self.error_message.configure(foreground='#E78F7D')
         self.running = False
         self.stop = False
 
@@ -61,8 +64,7 @@ class Window:
         info = Info()
         info.draw_time(self.canvas, round(end_time - start_time))
         self.toggle_buttons_state('normal')
-           
-      
+                 
 
     def display_error_message(self, error_message):
         self.error_message.config(text=error_message)
@@ -110,15 +112,17 @@ class Wiki_Page:
         self.title = title
 
     def draw(self, canvas, arrow):
-        canvas.create_oval(self.x0, self.y0, self.x1, self.y1, width=1, fill='orange')
+
+
+        canvas.create_oval(self.x0, self.y0, self.x1, self.y1, width=0.1, outline='#636363', fill='#636363')
         mid_x = (self.x1 + self.x0) / 2
-        canvas.create_text(mid_x, self.y1 + 10, text=self.title)
+        canvas.create_text(mid_x, self.y1 + 10, text=self.title, fill='#D6D6D6')
         if arrow:
-            canvas.create_line(mid_x, self.y1 + 25, mid_x, self.y1 + 45, arrow='last')
+            canvas.create_line(mid_x, self.y1 + 25, mid_x, self.y1 + 45, fill='#D6D6D6', arrow='last')
 
 class Info:    
     def draw_checked(self, canvas, total_checked):
-        canvas.create_text(5, 15, text=f'Pages checked: {total_checked}', anchor='nw')
+        canvas.create_text(5, 15, text=f'Pages checked: {total_checked}', fill='#D6D6D6', anchor='nw')
 
     def draw_time(self, canvas, time):
         t = None
@@ -126,5 +130,5 @@ class Info:
         if time > 60:
             t = round(time / 60)
         else: t = round(time)      
-        canvas.create_text(5, 45, text=f'Time: {t}{u}', anchor='nw')
+        canvas.create_text(5, 45, text=f'Time: {t}{u}', fill='#D6D6D6', anchor='nw')
         
