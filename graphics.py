@@ -65,7 +65,6 @@ class Window:
         info.draw_time(self.canvas, round(end_time - start_time))
         self.toggle_buttons_state('normal')
                  
-
     def display_error_message(self, error_message):
         self.error_message.config(text=error_message)
         self.error_message.pack()
