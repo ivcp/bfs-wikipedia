@@ -2,6 +2,7 @@ from tkinter import Canvas, ttk
 from ttkthemes import ThemedTk
 from search import Search
 import time
+import datetime
 
 class Window:
     def __init__(self):
@@ -124,10 +125,6 @@ class Info:
         canvas.create_text(5, 15, text=f'Pages checked: {total_checked}', fill='#D6D6D6', anchor='nw')
 
     def draw_time(self, canvas, time):
-        t = None
-        u = 's' if time < 60 else 'm'
-        if time > 60:
-            t = round(time / 60)
-        else: t = round(time)      
-        canvas.create_text(5, 45, text=f'Time: {t}{u}', fill='#D6D6D6', anchor='nw')
+        t = str(datetime.timedelta(seconds=time))          
+        canvas.create_text(5, 45, text=f'Time: {t}', fill='#D6D6D6', anchor='nw')
         
