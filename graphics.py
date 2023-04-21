@@ -14,7 +14,7 @@ class Window:
         self.__root.geometry(f'{self.width}x{self.height}')        
         self.canvas = Canvas(bg='#414141', height=800, width=400, highlightbackground='#636363')
         self.canvas.place(x=200, y=0)
-        self.start_button = ttk.Button(self.__root, text='Start', command=self.click)
+        self.start_button = ttk.Button(self.__root, text='Start', command=self.start_search)
         self.start_button.place(x=10, y=100)
         self.stop_button = ttk.Button(self.__root, text='Stop', command=self.stop_search)
         self.stop_button.place(x=10, y=200)
@@ -29,15 +29,8 @@ class Window:
         self.running = False
         self.stop = False
 
-    def stop_search(self):
-        self.stop = True
-        self.toggle_buttons_state('normal')
-  
-    def toggle_buttons_state(self, state):
-        self.start_button.config(state=state)        
-        self.rand_button.config(state=state)  
-    
-    def click(self):
+       
+    def start_search(self):
         self.stop = False
         self.toggle_buttons_state('disabled')       
         start_page = self.input.get()
@@ -64,11 +57,18 @@ class Window:
         info = Info()
         info.draw_time(self.canvas, round(end_time - start_time))
         self.toggle_buttons_state('normal')
+
+    def stop_search(self):
+        self.stop = True
+        self.toggle_buttons_state('normal')  
                  
+    def toggle_buttons_state(self, state):
+        self.start_button.config(state=state)        
+        self.rand_button.config(state=state)      
+    
     def display_error_message(self, error_message):
         self.error_message.config(text=error_message)
-        self.error_message.pack()
-
+        self.error_message.pack()        
 
     def draw_nodes(self, path_array):
         y0 = 50
